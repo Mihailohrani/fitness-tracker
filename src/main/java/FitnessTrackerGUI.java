@@ -1,6 +1,13 @@
 import java.awt.*;
 import javax.swing.*;
 
+/**
+ * The main GUI class for the Fitness Tracker application.
+ * This class is responsible for creating the main window and adding the different tabs to it.
+ *
+ * @author Mihailo Hranisavljevic
+ * @version 2025.02.16
+ */
 
 public class FitnessTrackerGUI extends JFrame {
 
