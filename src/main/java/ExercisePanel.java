@@ -53,7 +53,6 @@ public class ExercisePanel extends JPanel implements ActionListener {
       int sets = Integer.parseInt(setsField.getText());
       int weight = Integer.parseInt(weightField.getText());
 
-      // TODO: Add exercise to the list or database
       System.out.println("Added Exercise: " + name + " " + reps + "x" + sets + " " + weight + "lbs");
     }
   }
