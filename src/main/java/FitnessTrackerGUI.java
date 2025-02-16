@@ -16,10 +16,11 @@ public class FitnessTrackerGUI extends JFrame {
     setSize(800, 600);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     setLayout(new BorderLayout());
+    setLocationRelativeTo(null);
 
     JTabbedPane tabbedPane = new JTabbedPane();
     tabbedPane.addTab("Workouts", new WorkoutPanel());
-    tabbedPane.addTab("Workout Plan", new WorkoutPlanPannel());
+    tabbedPane.addTab("Workout Plan", new WorkoutPlanPanel());
     tabbedPane.addTab("Exercises", new ExercisePanel());
 
     add(tabbedPane, BorderLayout.CENTER);

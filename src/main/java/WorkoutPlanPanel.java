@@ -9,8 +9,8 @@ import java.awt.*;
  * @version 2025.02.16
  */
 
-public class WorkoutPlanPannel extends JPanel {
-  public WorkoutPlanPannel() {
+public class WorkoutPlanPanel extends JPanel {
+  public WorkoutPlanPanel() {
     setLayout(new BorderLayout());
     add(new JLabel("Workout Planner"), BorderLayout.CENTER);
   }

@@ -18,37 +18,37 @@ class WorkoutTest {
 
   @Test
   void testAddExercise() {
-    workout.addExercise(squat);
-    assertEquals(1, workout.getExercises().size());
+    workout.addExerciseToWorkout(squat);
+    assertEquals(1, workout.getExercisesInWorkout().size());
   }
 
   @Test
   void testRemoveExercise() {
-    workout.addExercise(squat);
-    workout.addExercise(benchPress);
-    workout.removeExercise(squat);
-    assertEquals(1, workout.getExercises().size());
-    assertFalse(workout.getExercises().contains(squat));
+    workout.addExerciseToWorkout(squat);
+    workout.addExerciseToWorkout(benchPress);
+    workout.removeExerciseFromWorkout(squat);
+    assertEquals(1, workout.getExercisesInWorkout().size());
+    assertFalse(workout.getExercisesInWorkout().contains(squat));
   }
 
   @Test
   void testGetExercisesSorted() {
-    workout.addExercise(squat);
-    workout.addExercise(benchPress);
+    workout.addExerciseToWorkout(squat);
+    workout.addExerciseToWorkout(benchPress);
 
-    List<Exercise> sortedExercises = workout.getExercises();
+    List<Exercise> sortedExercises = workout.getExercisesInWorkout();
     assertEquals("Bench Press", sortedExercises.get(0).getName());
     assertEquals("Shoulder Press", sortedExercises.get(1).getName());
   }
 
   @Test
   void testAddNullExercise() {
-    assertThrows(IllegalArgumentException.class, () -> workout.addExercise(null));
+    assertThrows(IllegalArgumentException.class, () -> workout.addExerciseToWorkout(null));
   }
 
   @Test
   void testRemoveNullExercise() {
-    assertThrows(IllegalArgumentException.class, () -> workout.removeExercise(null));
+    assertThrows(IllegalArgumentException.class, () -> workout.removeExerciseFromWorkout(null));
   }
 
   @Test

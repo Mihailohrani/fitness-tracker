@@ -1,40 +1,44 @@
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-/**
- * Panel for the exercise tab.
- * Used for management of exercises.
- *
- * @author Mihailo Hranisavljevic
- * @version 2025.02.16
- */
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExercisePanel extends JPanel implements ActionListener {
   private final JButton buttonAddExercise;
   private final OutputHandler outputHandler;
+  private final DefaultListModel<String> exerciseListModel;
+  private final List<Exercise> exercises;
 
   public ExercisePanel() {
-    setLayout(new BorderLayout());
-    add(new JLabel("Exercise Management", SwingConstants.CENTER), BorderLayout.PAGE_START);
+    setLayout(null);
+
+    JLabel titleLabel = new JLabel("Exercise Management");
+    titleLabel.setBounds(300, 10, 200, 30);
+    add(titleLabel);
 
     buttonAddExercise = new JButton("Add Exercise");
+    buttonAddExercise.setBounds(50, 50, 150, 30);
     buttonAddExercise.addActionListener(this);
-    add(buttonAddExercise, BorderLayout.CENTER);
+    add(buttonAddExercise);
 
-    JTextArea outputArea = new JTextArea(10, 30);
+    exerciseListModel = new DefaultListModel<>();
+    JList<String> exerciseList = new JList<>(exerciseListModel);
+    JScrollPane listScrollPane = new JScrollPane(exerciseList);
+    listScrollPane.setBounds(50, 100, 300, 200);
+    add(listScrollPane);
+
+    JTextArea outputArea = new JTextArea();
     outputArea.setEditable(false);
-    add(new JScrollPane(outputArea), BorderLayout.SOUTH);
+    JScrollPane outputScrollPane = new JScrollPane(outputArea);
+    outputScrollPane.setBounds(50, 320, 500, 100);
+    add(outputScrollPane);
 
     outputHandler = new OutputHandler(outputArea);
+
+    exercises = new ArrayList<>();
   }
 
-  /**
-   * Method to handle button clicks.
-   *
-   * @param e ActionEvent
-   */
   @Override
   public void actionPerformed(ActionEvent e) {
     if (e.getSource() == buttonAddExercise) {
@@ -42,34 +46,63 @@ public class ExercisePanel extends JPanel implements ActionListener {
     }
   }
 
-
-  /**
-   * Method to show dialog for adding an exercise.
-   */
   private void showAddExerciseDialog() {
     JTextField nameField = new JTextField();
     JTextField repsField = new JTextField();
     JTextField setsField = new JTextField();
     JTextField weightField = new JTextField();
 
-    JPanel panel = new JPanel(new GridLayout(4, 2));
-    panel.add(new JLabel("Exercise Name:"));
+    JPanel panel = new JPanel();
+    panel.setLayout(null);
+    panel.setPreferredSize(new java.awt.Dimension(300, 150));
+
+    JLabel nameLabel = new JLabel("Exercise Name:");
+    nameLabel.setBounds(10, 10, 120, 25);
+    nameField.setBounds(140, 10, 150, 25);
+
+    JLabel repsLabel = new JLabel("Reps:");
+    repsLabel.setBounds(10, 40, 120, 25);
+    repsField.setBounds(140, 40, 150, 25);
+
+    JLabel setsLabel = new JLabel("Sets:");
+    setsLabel.setBounds(10, 70, 120, 25);
+    setsField.setBounds(140, 70, 150, 25);
+
+    JLabel weightLabel = new JLabel("Weight (kg):");
+    weightLabel.setBounds(10, 100, 120, 25);
+    weightField.setBounds(140, 100, 150, 25);
+
+    panel.add(nameLabel);
     panel.add(nameField);
-    panel.add(new JLabel("Reps:"));
+    panel.add(repsLabel);
     panel.add(repsField);
-    panel.add(new JLabel("Sets:"));
+    panel.add(setsLabel);
     panel.add(setsField);
-    panel.add(new JLabel("Weight (lbs):"));
+    panel.add(weightLabel);
     panel.add(weightField);
 
     int result = JOptionPane.showConfirmDialog(this, panel, "Add Exercise", JOptionPane.OK_CANCEL_OPTION);
     if (result == JOptionPane.OK_OPTION) {
-      String name = nameField.getText();
-      int reps = Integer.parseInt(repsField.getText());
-      int sets = Integer.parseInt(setsField.getText());
-      int weight = Integer.parseInt(weightField.getText());
+      try {
+        String name = nameField.getText().trim();
+        int reps = Integer.parseInt(repsField.getText().trim());
+        int sets = Integer.parseInt(setsField.getText().trim());
+        int weight = Integer.parseInt(weightField.getText().trim());
 
-      outputHandler.print("Added Exercise: " + name + " " + reps + "x" + sets + " " + weight + "lbs");
+        if (name.isEmpty() || reps < 0 || sets < 0 || weight < 0) {
+          throw new IllegalArgumentException();
+        }
+
+        Exercise exercise = new Exercise(name, reps, sets, weight);
+        exercises.add(exercise);
+        exerciseListModel.addElement(exercise.toString());
+        outputHandler.print("Added Exercise: " + exercise);
+
+      } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Please enter valid numbers for reps, sets, and weight.", "Input Error", JOptionPane.ERROR_MESSAGE);
+      } catch (IllegalArgumentException ex) {
+        JOptionPane.showMessageDialog(this, ex.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
+      }
     }
   }
 }

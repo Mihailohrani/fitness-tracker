@@ -31,7 +31,7 @@ public class Workout {
    * @param exercise the exercise to add
    * @throws IllegalArgumentException if exercise is null
    */
-  public void addExercise(Exercise exercise) {
+  public void addExerciseToWorkout(Exercise exercise) {
     if (exercise == null) {
       throw new IllegalArgumentException();
     }
@@ -44,7 +44,7 @@ public class Workout {
    * @param exercise the exercise to remove
    * @throws IllegalArgumentException if exercise is null
    */
-  public void removeExercise(Exercise exercise) {
+  public void removeExerciseFromWorkout(Exercise exercise) {
     if(exercise == null) {
       throw new IllegalArgumentException();
     }
@@ -56,7 +56,7 @@ public class Workout {
    *
    * @return a list of exercises sorted alphabetically
    */
-  public List<Exercise> getExercises() {
+  public List<Exercise> getExercisesInWorkout() {
     List<Exercise> sortedExercises = new ArrayList<>(exercises);
     sortedExercises.sort(Comparator.comparing(Exercise::getName));
     return sortedExercises;
