@@ -4,6 +4,14 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Panel for the exercise tab.
+ * Used for management of exercises.
+ *
+ * @author Mihailo Hranisavljevic
+ * @version 2025.02.18
+ */
+
 public class ExercisePanel extends JPanel implements ActionListener {
   private final JButton buttonAddExercise;
   private final OutputHandler outputHandler;
