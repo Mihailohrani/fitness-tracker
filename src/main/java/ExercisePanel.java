@@ -35,7 +35,6 @@ public class ExercisePanel extends JPanel implements ActionListener {
     add(outputScrollPane);
 
     outputHandler = new OutputHandler(outputArea);
-
     exercises = new ArrayList<>();
   }
 
@@ -52,6 +51,18 @@ public class ExercisePanel extends JPanel implements ActionListener {
     JTextField setsField = new JTextField();
     JTextField weightField = new JTextField();
 
+    JPanel panel = createExerciseDialogPanel(nameField, repsField, setsField, weightField);
+
+    int result = JOptionPane.showConfirmDialog(this, panel, "Add Exercise", JOptionPane.OK_CANCEL_OPTION);
+    if (result == JOptionPane.OK_OPTION) {
+      processExerciseInput(nameField, repsField, setsField, weightField);
+    }
+  }
+
+  /**
+   * Creates a JPanel containing input fields for adding an exercise.
+   */
+  private JPanel createExerciseDialogPanel(JTextField nameField, JTextField repsField, JTextField setsField, JTextField weightField) {
     JPanel panel = new JPanel();
     panel.setLayout(null);
     panel.setPreferredSize(new java.awt.Dimension(300, 150));
@@ -81,28 +92,32 @@ public class ExercisePanel extends JPanel implements ActionListener {
     panel.add(weightLabel);
     panel.add(weightField);
 
-    int result = JOptionPane.showConfirmDialog(this, panel, "Add Exercise", JOptionPane.OK_CANCEL_OPTION);
-    if (result == JOptionPane.OK_OPTION) {
-      try {
-        String name = nameField.getText().trim();
-        int reps = Integer.parseInt(repsField.getText().trim());
-        int sets = Integer.parseInt(setsField.getText().trim());
-        int weight = Integer.parseInt(weightField.getText().trim());
+    return panel;
+  }
 
-        if (name.isEmpty() || reps < 0 || sets < 0 || weight < 0) {
-          throw new IllegalArgumentException();
-        }
+  /**
+   * Processes user input and adds a new exercise if valid.
+   */
+  private void processExerciseInput(JTextField nameField, JTextField repsField, JTextField setsField, JTextField weightField) {
+    try {
+      String name = nameField.getText().trim();
+      int reps = Integer.parseInt(repsField.getText().trim());
+      int sets = Integer.parseInt(setsField.getText().trim());
+      int weight = Integer.parseInt(weightField.getText().trim());
 
-        Exercise exercise = new Exercise(name, reps, sets, weight);
-        exercises.add(exercise);
-        exerciseListModel.addElement(exercise.toString());
-        outputHandler.print("Added Exercise: " + exercise);
-
-      } catch (NumberFormatException ex) {
-        JOptionPane.showMessageDialog(this, "Please enter valid numbers for reps, sets, and weight.", "Input Error", JOptionPane.ERROR_MESSAGE);
-      } catch (IllegalArgumentException ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
+      if (name.isEmpty() || reps < 0 || sets < 0 || weight < 0) {
+        throw new IllegalArgumentException();
       }
+
+      Exercise exercise = new Exercise(name, reps, sets, weight);
+      exercises.add(exercise);
+      exerciseListModel.addElement(exercise.toString());
+      outputHandler.print("Added Exercise: " + exercise);
+
+    } catch (NumberFormatException ex) {
+      JOptionPane.showMessageDialog(this, "Please enter valid numbers for reps, sets, and weight.", "Input Error", JOptionPane.ERROR_MESSAGE);
+    } catch (IllegalArgumentException ex) {
+      JOptionPane.showMessageDialog(this, ex.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
     }
   }
 }
