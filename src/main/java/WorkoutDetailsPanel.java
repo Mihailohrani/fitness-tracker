@@ -6,43 +6,57 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * A panel that displays and manages workouts for a selected day.
- * Shows existing workouts and allows adding new ones.
+ * The {@code WorkoutDetailsPanel} class represents the panel that displays and manages
+ * workouts for a selected day. It allows users to view, add, and manage workouts.
  *
- * @author Mihailo
+ * This panel is dynamically updated when a day is selected from the {@code WorkoutPlanPanel}.
+ *
+ * @author Mihailo Hranisavljevic
  * @version 2025.02.21
  */
 public class WorkoutDetailsPanel extends JPanel implements ActionListener {
   private final WorkoutPlan workoutPlan;
   private final JTextArea workoutDisplay;
-  private final JButton addWorkoutButton;
   private LocalDate selectedDate;
 
   /**
-   * Creates a new WorkoutDetailsPanel.
+   * Constructs a {@code WorkoutDetailsPanel} with an associated {@code WorkoutPlan}.
    *
-   * @param workoutPlan the workout plan to display
+   * @param workoutPlan The workout plan associated with this panel.
    */
   public WorkoutDetailsPanel(WorkoutPlan workoutPlan) {
     this.workoutPlan = workoutPlan;
     setLayout(new BorderLayout());
+    setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Adds padding
 
     JLabel titleLabel = new JLabel("Workout Details", SwingConstants.CENTER);
-    titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+    titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+    titleLabel.setOpaque(true);
+    titleLabel.setBackground(Color.LIGHT_GRAY);
+    titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
     add(titleLabel, BorderLayout.NORTH);
 
     workoutDisplay = new JTextArea();
     workoutDisplay.setEditable(false);
+    workoutDisplay.setFont(new Font("Arial", Font.PLAIN, 14));
     JScrollPane scrollPane = new JScrollPane(workoutDisplay);
     add(scrollPane, BorderLayout.CENTER);
 
-    addWorkoutButton = new JButton("Add Workout");
+    JButton addWorkoutButton = new JButton("Add Workout");
+    addWorkoutButton.setFont(new Font("Arial", Font.BOLD, 14));
+    addWorkoutButton.setFocusPainted(false);
     addWorkoutButton.addActionListener(this);
-    add(addWorkoutButton, BorderLayout.SOUTH);
+
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+    buttonPanel.add(addWorkoutButton);
+    add(buttonPanel, BorderLayout.SOUTH);
   }
 
   /**
    * Updates the workout display when a day is selected.
+   *
+   * @param date The selected date for which workouts should be displayed.
    */
   public void updateWorkoutDetails(LocalDate date) {
     this.selectedDate = date;
@@ -59,7 +73,10 @@ public class WorkoutDetailsPanel extends JPanel implements ActionListener {
   }
 
   /**
-   * Opens a dialog to add a workout.
+   * Handles the action event when the "Add Workout" button is clicked.
+   * Opens a dialog to allow the user to input a new workout.
+   *
+   * @param e The action event triggered by the button click.
    */
   @Override
   public void actionPerformed(ActionEvent e) {
@@ -71,7 +88,7 @@ public class WorkoutDetailsPanel extends JPanel implements ActionListener {
     JTextField nameField = new JTextField();
     JTextField descriptionField = new JTextField();
 
-    JPanel panel = new JPanel(new GridLayout(2, 2));
+    JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5));
     panel.add(new JLabel("Workout Name:"));
     panel.add(nameField);
     panel.add(new JLabel("Description:"));
@@ -85,6 +102,9 @@ public class WorkoutDetailsPanel extends JPanel implements ActionListener {
 
   /**
    * Adds a workout to the selected date and updates the display.
+   *
+   * @param name        The name of the workout.
+   * @param description The description of the workout.
    */
   private void addWorkout(String name, String description) {
     if (name.isEmpty() || description.isEmpty()) {
