@@ -57,4 +57,12 @@ public class WorkoutManager {
   public void removeWorkout(Workout workout) {
     workouts.remove(workout);
   }
+
+  private void loadDefaultWorkouts() {
+    Workout defaultWorkout = new Workout("Full Body", "A balanced full-body workout", new Date());
+    defaultWorkout.addExerciseToWorkout(new Exercise("Bench Press", 8, 4, 80));
+    defaultWorkout.addExerciseToWorkout(new Exercise("Squat", 10, 4, 100));
+    defaultWorkout.addExerciseToWorkout(new Exercise("Deadlift", 5, 3, 120));
+    workouts.add(defaultWorkout);
+  }
 }

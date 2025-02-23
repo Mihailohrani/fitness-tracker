@@ -6,7 +6,7 @@ import javax.swing.*;
  * This class is responsible for creating the main window and adding the different tabs to it.
  *
  * @author Mihailo Hranisavljevic
- * @version 2025.02.16
+ * @version 2025.02.23
  */
 
 public class FitnessTrackerGUI extends JFrame {
@@ -18,12 +18,16 @@ public class FitnessTrackerGUI extends JFrame {
     setLayout(new BorderLayout());
     setLocationRelativeTo(null);
 
+    ExercisePanel exercisePanel = new ExercisePanel(null);
+    WorkoutPanel workoutPanel = new WorkoutPanel(exercisePanel);
+    exercisePanel = new ExercisePanel(workoutPanel);
+
     JTabbedPane tabbedPane = new JTabbedPane();
-    tabbedPane.addTab("Workouts", new WorkoutPanel());
+    tabbedPane.addTab("Workouts", workoutPanel);
     tabbedPane.addTab("Workout Plan", new WorkoutPlanPanel());
-    tabbedPane.addTab("Exercises", new ExercisePanel());
+    tabbedPane.addTab("Exercises", exercisePanel);
 
     add(tabbedPane, BorderLayout.CENTER);
-
   }
+
 }
