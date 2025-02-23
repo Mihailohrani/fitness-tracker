@@ -4,60 +4,46 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+
 
 /**
  * Panel for the workout tab.
  * Users can add, view, and remove workouts.
  *
  * @author Mihailo Hranisavljevic
- * @version 2025.02.18
+ * @version 2025.02.23
  */
 public class WorkoutPanel extends JPanel implements ActionListener {
   private final JButton buttonAddWorkout, buttonRemoveWorkout;
   private final DefaultListModel<String> workoutListModel;
   private final JList<String> workoutList;
-  private final List<Workout> workouts;
   private final OutputHandler outputHandler;
 
   public WorkoutPanel() {
-    setLayout(null);
+    setLayout(new BorderLayout());
 
-    JLabel titleLabel = new JLabel("Workout Management");
-    titleLabel.setBounds(300, 10, 200, 30);
-    add(titleLabel);
-
+    JPanel buttonPanel = new JPanel(new FlowLayout());
     buttonAddWorkout = new JButton("Add Workout");
-    buttonAddWorkout.setBounds(50, 50, 150, 30);
-    buttonAddWorkout.addActionListener(this);
-    add(buttonAddWorkout);
-
     buttonRemoveWorkout = new JButton("Remove Workout");
-    buttonRemoveWorkout.setBounds(220, 50, 150, 30);
-    buttonRemoveWorkout.addActionListener(this);
-    add(buttonRemoveWorkout);
+
+    buttonPanel.add(buttonAddWorkout);
+    buttonPanel.add(buttonRemoveWorkout);
+
+    add(buttonPanel, BorderLayout.NORTH);
 
     workoutListModel = new DefaultListModel<>();
     workoutList = new JList<>(workoutListModel);
-    JScrollPane listScrollPane = new JScrollPane(workoutList);
-    listScrollPane.setBounds(50, 100, 300, 200);
-    add(listScrollPane);
+    add(new JScrollPane(workoutList), BorderLayout.CENTER);
 
-    JTextArea outputArea = new JTextArea();
-    outputArea.setEditable(false);
-    JScrollPane outputScrollPane = new JScrollPane(outputArea);
-    outputScrollPane.setBounds(50, 320, 500, 100);
-    add(outputScrollPane);
+    buttonAddWorkout.addActionListener(this);
+    buttonRemoveWorkout.addActionListener(this);
 
-    outputHandler = new OutputHandler(outputArea);
-    workouts = new ArrayList<>();
+    outputHandler = new OutputHandler(new JTextArea());
   }
 
   /**
-   * Handles button clicks.
-   *
+   * Button actions for adding and removing workouts.
    * @param e the action event
    */
   @Override
@@ -70,15 +56,14 @@ public class WorkoutPanel extends JPanel implements ActionListener {
   }
 
   /**
-   * Shows a dialog for adding a workout.
+   * Displays a dialog for adding a workout.
    */
   private void showAddWorkoutDialog() {
     JTextField nameField = new JTextField();
     JTextField descriptionField = new JTextField();
     JTextField dateField = new JTextField("yyyy-MM-dd");
 
-    JPanel panel = new JPanel();
-    panel.setLayout(new GridLayout(3, 2));
+    JPanel panel = new JPanel(new GridLayout(3, 2));
     panel.add(new JLabel("Workout Name:"));
     panel.add(nameField);
     panel.add(new JLabel("Description:"));
@@ -93,8 +78,7 @@ public class WorkoutPanel extends JPanel implements ActionListener {
   }
 
   /**
-   * Processes input from the add workout dialog.
-   *
+   * Processes the input from the add workout dialog.
    * @param nameField the name field
    * @param descriptionField the description field
    * @param dateField the date field
@@ -110,7 +94,7 @@ public class WorkoutPanel extends JPanel implements ActionListener {
       }
 
       Workout workout = new Workout(name, description, date);
-      workouts.add(workout);
+      WorkoutManager.getInstance().addWorkout(workout);
       workoutListModel.addElement(workout.getName() + " - " + workout.getDate());
       outputHandler.print("Added Workout: " + workout);
 
@@ -127,7 +111,8 @@ public class WorkoutPanel extends JPanel implements ActionListener {
   private void removeSelectedWorkout() {
     int selectedIndex = workoutList.getSelectedIndex();
     if (selectedIndex != -1) {
-      workouts.remove(selectedIndex);
+      Workout workout = WorkoutManager.getInstance().getWorkouts().get(selectedIndex);
+      WorkoutManager.getInstance().removeWorkout(workout);
       workoutListModel.remove(selectedIndex);
       outputHandler.print("Removed workout.");
     } else {
@@ -135,3 +120,4 @@ public class WorkoutPanel extends JPanel implements ActionListener {
     }
   }
 }
+
