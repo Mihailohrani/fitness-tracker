@@ -2,12 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
  * The WorkoutPanel class allows users to manage workouts.
- * Users can add, remove workouts and assign exercises to workouts.
- * It also provides a dropdown list of all available exercises.
+ * Users can create, remove workouts, and assign exercises to them.
  * This panel is linked with ExercisePanel to retrieve exercises dynamically.
  *
  * @author Mihailo Hranisavljevic
@@ -49,7 +51,10 @@ public class WorkoutPanel extends JPanel implements ActionListener {
     buttonRemoveWorkout.addActionListener(this);
     buttonAddExerciseToWorkout.addActionListener(this);
 
-    outputHandler = new OutputHandler(new JTextArea());
+    JTextArea outputArea = new JTextArea();
+    outputArea.setEditable(false);
+    add(new JScrollPane(outputArea), BorderLayout.SOUTH);
+    outputHandler = new OutputHandler(outputArea);
 
     exerciseDropdown = new JComboBox<>();
     add(exerciseDropdown, BorderLayout.SOUTH);
@@ -70,7 +75,7 @@ public class WorkoutPanel extends JPanel implements ActionListener {
   }
 
   /**
-   * Loads all existing workouts from WorkoutManager into the workout list.
+   * Loads all existing workouts from WorkoutManager into the list.
    */
   private void loadWorkouts() {
     workoutListModel.clear();
@@ -84,11 +89,79 @@ public class WorkoutPanel extends JPanel implements ActionListener {
   @Override
   public void actionPerformed(ActionEvent e) {
     if (e.getSource() == buttonAddWorkout) {
-      outputHandler.print("Added Workout");
+      showAddWorkoutDialog();
     } else if (e.getSource() == buttonRemoveWorkout) {
-      outputHandler.print("Removed Workout");
+      removeSelectedWorkout();
     } else if (e.getSource() == buttonAddExerciseToWorkout) {
       addExerciseToSelectedWorkout();
+    }
+  }
+
+  /**
+   * Displays a dialog for adding a new workout.
+   */
+  private void showAddWorkoutDialog() {
+    JTextField nameField = new JTextField();
+    JTextField descriptionField = new JTextField();
+    JTextField dateField = new JTextField("yyyy-MM-dd");
+
+    JPanel panel = new JPanel(new GridLayout(3, 2));
+    panel.add(new JLabel("Workout Name:"));
+    panel.add(nameField);
+    panel.add(new JLabel("Description:"));
+    panel.add(descriptionField);
+    panel.add(new JLabel("Date (yyyy-MM-dd):"));
+    panel.add(dateField);
+
+    int result = JOptionPane.showConfirmDialog(this, panel, "Add Workout", JOptionPane.OK_CANCEL_OPTION);
+    if (result == JOptionPane.OK_OPTION) {
+      processWorkoutInput(nameField, descriptionField, dateField);
+    }
+  }
+
+  /**
+   * Processes the input from the add workout dialog.
+   *
+   * @param nameField       The workout name field.
+   * @param descriptionField The description field.
+   * @param dateField        The date field.
+   */
+  private void processWorkoutInput(JTextField nameField, JTextField descriptionField, JTextField dateField) {
+    try {
+      String name = nameField.getText().trim();
+      String description = descriptionField.getText().trim();
+      Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dateField.getText().trim());
+
+      if (name.isEmpty() || description.isEmpty()) {
+        throw new IllegalArgumentException("Workout name and description cannot be empty.");
+      }
+
+      Workout workout = new Workout(name, description, date);
+      WorkoutManager.getInstance().addWorkout(workout);
+      workoutListModel.addElement(workout.getName() + " - " + workout.getDate());
+
+      outputHandler.print("Added Workout: " + workout.getName());
+
+    } catch (ParseException e) {
+      outputHandler.print("Invalid date format. Use yyyy-MM-dd.");
+    } catch (IllegalArgumentException e) {
+      outputHandler.print("Error: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Removes the selected workout from the list.
+   */
+  private void removeSelectedWorkout() {
+    int selectedIndex = workoutList.getSelectedIndex();
+    if (selectedIndex != -1) {
+      Workout workout = WorkoutManager.getInstance().getWorkouts().get(selectedIndex);
+      WorkoutManager.getInstance().removeWorkout(workout);
+      workoutListModel.remove(selectedIndex);
+
+      outputHandler.print("Removed workout: " + workout.getName());
+    } else {
+      outputHandler.print("Please select a workout to remove.");
     }
   }
 
@@ -98,7 +171,7 @@ public class WorkoutPanel extends JPanel implements ActionListener {
   private void addExerciseToSelectedWorkout() {
     int selectedIndex = workoutList.getSelectedIndex();
     if (selectedIndex == -1) {
-      JOptionPane.showMessageDialog(this, "Select a workout first!", "Error", JOptionPane.ERROR_MESSAGE);
+      outputHandler.print("Select a workout first!");
       return;
     }
 
@@ -106,7 +179,7 @@ public class WorkoutPanel extends JPanel implements ActionListener {
     String selectedExercise = (String) exerciseDropdown.getSelectedItem();
 
     if (selectedExercise == null) {
-      JOptionPane.showMessageDialog(this, "No exercises available!", "Error", JOptionPane.ERROR_MESSAGE);
+      outputHandler.print("No exercises available!");
       return;
     }
 
